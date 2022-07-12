@@ -74,54 +74,31 @@ const app = new Vue({
 
 const oradores = new Vue({
     el: "#listaOradores",
-    data: {
-        oradores: [
-            {
-                nombre: "Steven Jobs",
-                desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptatem veritatis aperiam, quisquam ducimus vitae cupiditate illum natus quibusdam fuga esse quo, sed voluptatum, quasi totam enim culpa voluptate libero consequatur.",
-                conocimientos: [
-                    {
-                        nombre: "JavaScript",
-                        style: " bg-warning"
-                    },
-                    {
-                        nombre: "React",
-                        style: "bg-info"
-                    }
-                ],
-                imagen: "./img/steve.jpg"
-            },
-            {
-                nombre: "Bill Gates",
-                desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptatem veritatis aperiam, quisquam ducimus vitae cupiditate illum natus quibusdam fuga esse quo, sed voluptatum, quasi totam enim culpa voluptate libero consequatur.",
-                conocimientos: [
-                    {
-                        nombre: "JavaScript",
-                        style: " bg-warning"
-                    },
-                    {
-                        nombre: "React",
-                        style: "bg-info"
-                    }
-                ],
-                imagen: "./img/bill.jpg"
-            },
-            {
-                nombre: "Ada Lovelace",
-                desc: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptatem veritatis aperiam, quisquam ducimus vitae cupiditate illum natus quibusdam fuga esse quo, sed voluptatum, quasi totam enim culpa voluptate libero consequatur.",
-                conocimientos: [
-                    {
-                        nombre: "Negocios",
-                        style: " bg-secondary"
-                    },
-                    {
-                        nombre: "Startups",
-                        style: "bg-danger"
-                    }
-                ],
-                imagen: "./img/ada.jpeg"
-            }
-        ]
+    data() {
+        return{
+        oradores: [],
+        errored:false,
+        loading:true,
+
+        }
+    },
+    created(){
+        var url = "http://localhost:8080/api/v1/oradores/";
+        this.fetchData(url)
+    },
+    methods:{
+        fetchData(url){
+            fetch(url)
+            .then(response => response.json())
+            .then(data=> {
+                this.oradores = data;
+                this.loading = false;
+            })
+            .catch(err =>{
+                console.log(err)
+                this.errored = true;
+            })
+        }
     }
 })
 
