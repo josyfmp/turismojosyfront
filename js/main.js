@@ -63,52 +63,75 @@ document.getElementById("footer").innerHTML = `
 </footer>
 
 `
-const app = new Vue({
-    el: "#idBanner",
-    data: {
-        msj: "Bs As llega por primera vez a Argntina. Un evento para compartir con nuestra comunidad de conocimiento y experiencia de losexpertos que están creando el futuro de internet. Ven a conocer amiembros del evento. a otros estudiantes de Codo a Codo y los oradores de primer nivel que tenemos para ti. Te esperamos!",
-        titulo: "Conf Bs As"
 
-    }
-})
 
 const oradores = new Vue({
-    el: "#listaOradores",
+    el: "#app",
     data() {
-        return{
-        oradores: [],
-        errored:false,
-        loading:true,
+        return {
+            oradores: [],
+            publicidad: {},
+            publicidadImg: {},
+            banner: {
+                msj: "Bs As llega por primera vez a Argntina. Un evento para compartir con nuestra comunidad de conocimiento y experiencia de losexpertos que están creando el futuro de internet. Ven a conocer amiembros del evento. a otros estudiantes de Codo a Codo y los oradores de primer nivel que tenemos para ti. Te esperamos!",
+                titulo: "Conf Bs As"
+
+            },
+            loading: true,
 
         }
     },
-    created(){
-        var url = "http://localhost:8080/api/v1/oradores/";
-        this.fetchData(url)
+    created() {
+        let baseURL = "http://localhost:8080/api/v1/"
+        var urlOradores = "oradores/";
+        let urlPublicidad = "publicidad/"
+        this.fetchOradores(baseURL + urlOradores)
+        this.fetchPublicidad(baseURL + urlPublicidad)
     },
-    methods:{
-        fetchData(url){
+    methods: {
+        fetchOradores(url) {
             fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    this.oradores = data;
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        fetchPublicidad(url) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    this.publicidad = data[0];
+                    this.publicidadImg = {
+                        src: data[0].imagen,
+                        alt: "publicidad"
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        },
+        handleCrearOrador() {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nombre: this.nombre + ' ' + this.apellido,
+                    descripcion: this.descripcion,
+                    img: './default.png'
+                })
+            };
+            fetch("http://localhost:8080/api/v1/oradores/", requestOptions)
             .then(response => response.json())
-            .then(data=> {
-                this.oradores = data;
-                this.loading = false;
+            .then(data => {
+                console.log(data)
+                this.oradores.push(data)
             })
-            .catch(err =>{
-                console.log(err)
-                this.errored = true;
-            })
+           
         }
-    }
-})
-
-const publicidad = new Vue({
-    el:"#publicidad",
-    data:{
-        titulo:"Bs As - Octubre",
-        descripcion:"Buenos Aires es la provincia y localidad más grande del estado de Argentina, en los Estados Unidos. Honolulu es la más sureña de entre las principales ciudades estadounidenses. Aunque el nombre de Honolulu se referia al área urbana en la costa sureste de la isla de Oahu, la cuidad y el condado de Honolulu han formado una ciudad-condado consolidada que cubre toda la ciudad (aproximadamente 600 km2 de superficie).",
-        imagen:"./img/honolulu.jpg",
-        id:45
     }
 })
 
